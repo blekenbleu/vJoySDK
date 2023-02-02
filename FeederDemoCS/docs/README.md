@@ -92,38 +92,39 @@ It is advisable to start your feeder from the supplied example and make
 the needed changes. Here are the five basic steps you might want to
 follow:
 
-+--------------+-------------------------------------------------------+  
-| **Test       | Check that the driver is installed and enabled.       |  
-| Driver**:    |                                                       |  
+| Basic steps  |  details |
+|--------------|-------------------------------------------------------|  
+| **Test Driver**: | Check that the driver is installed and enabled.   |  
+|              |                                                       |  
 |              | Obtain information about the driver.                  |  
 |              |                                                       |  
 |              | An installed driver implies at least one vJoy device. |  
 |              |                                                       |  
 |              | Test if driver matches interface DLL file             |  
 |              | (vJoyInterface.dll)                                   |  
-+--------------+-------------------------------------------------------+  
+|--------------|-------------------------------------------------------|  
 | **Test       | Get information regarding one or more devices.        |  
 | Virtual      |                                                       |  
 | Device(s)**: | Read information about a specific device              |  
 |              | capabilities: Axes, buttons and POV hat switches.     |  
-+--------------+-------------------------------------------------------+  
+|--------------|-------------------------------------------------------|  
 | **Device     | Obtain status of a vJoy device.                       |  
 | ac           |                                                       |  
 | quisition**: | Acquire the device if the device status is *owned* or |  
 |              | is *free.*                                            |  
-+--------------+-------------------------------------------------------+  
+|--------------|-------------------------------------------------------|  
 | *            | Inject [position data]{.underline} to a device (as    |  
 | *Updating**: | long as the device is owened by the feeder).          |  
 |              |                                                       |  
 |              | Position data includes the position of the axes,      |  
 |              | state of the buttons and state of the POV hat         |  
 |              | switches.                                             |  
-+--------------+-------------------------------------------------------+  
+|--------------|-------------------------------------------------------|  
 | **R          | The device is *owned* by the feeder and cannot be fed |  
 | elinquishing | by another application until relinquished.            |  
 | the          |                                                       |  
 | device**:    |                                                       |  
-+--------------+-------------------------------------------------------+  
+|--------------|-------------------------------------------------------|  
 
 *Notes:*
 
@@ -155,8 +156,6 @@ version numbers will be identical.
 If you are not interested in the actual values of the respective version
 numbers, you can simplify your code by passing NULL to both function
 parameters.
-
-###   {#section-2 .list-paragraph}
 
 ### Test vJoy Virtual Devices:
 
@@ -622,8 +621,8 @@ Feedback data.
 void **FfbRegisterGenCB**(FfbCbFunc cb, object data);
 
 Register a FFB callback function that will be called by the driver every
-time a FFB data packet arrives. For additional information see [Receptor
-Unit section](#receptor-unit).
+time a FFB data packet arrives.
+For additional information see [Receptor Unit section](#receptor-unit).
 
 bool **FfbStart**(UInt32 rID);
 
@@ -769,7 +768,7 @@ UInt32 **Ffb_h\_Eff_Const**(IntPtr Packet, ref FFB_EFF_CONST Effect);
 Get parameters of an Effect of type Constant (PT_EFFREP)
 
 Effect structure (FFB_EFF_CONST) definition:
-
+```
 public struct FFB_EFF_CONST
 
 {
@@ -827,14 +826,14 @@ public Byte DirY; // Y direction: Positive values are below the center
 // Negative are Two\'s complement
 
 }
-
+```
 If Constant Effect Packet was found then returns ERROR_SUCCESS and fills
 structure **Effect\
 **If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
 parameters are undefined.\
 If Packet is malformed then returns ERROR_INVALID_DATA. Output
 parameters are undefined.
-
+```
 UInt32 **Ffb_h\_Eff_Ramp**(IntPtr Packet, ref FFB_EFF_RAMP RampEffect);
 
 Get parameters of an Effect of type Ramp (PT_RAMPREP)
@@ -853,7 +852,7 @@ effect
 public Byte End; // The Normalized magnitude at the end of the effect
 
 }
-
+```
 If Ramp effect Packet was found then returns ERROR_SUCCESS and fills
 structure Effect.\
 If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
@@ -926,7 +925,7 @@ public Byte Phase;
 public UInt16 Period;
 
 }
-
+```
 If Periodic Packet was found then returns ERROR_SUCCESS and fills
 structure Effect -- this structure holds Effect Block Index, Magnitude,
 Offset, Phase and period.\
@@ -934,7 +933,7 @@ If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
 parameters are undefined.\
 If Packet is malformed then returns ERROR_INVALID_DATA. Output
 parameters are undefined.
-
+```
 UInt32 **Ffb_h\_Eff_Cond**(IntPtr Packet, ref FFB_EFF_COND Condition);
 
 Get parameters of an Effect of type Conditional (PT_CONDREP).
@@ -976,7 +975,7 @@ public Byte NegSatur; // Negative Saturation: Range 0 -- 10000
 public Byte DeadBand; // Dead Band: : Range 0 -- 10000
 
 }
-
+```
 If Condition Packet was found then returns ERROR_SUCCESS and fills
 structure Condition - this structure holds Effect Block Index, Direction
 (X/Y), Centre Point Offset, Dead Band and other conditions.\
@@ -984,7 +983,7 @@ If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
 parameters are undefined.\
 If Packet is malformed then returns ERROR_INVALID_DATA. Output
 parameters are undefined.
-
+```
 UInt32 **Ffb_h\_Eff_Envlp**(IntPtr Packet, ref FFB_EFF_ENVLP Envelope);
 
 Get parameters of an Effect of type Envelope (PT_ENVREP).
@@ -1016,16 +1015,16 @@ public UInt16 AttackTime;
 public UInt16 FadeTime;
 
 }
-
+```
 If Envelope Packet was found then returns ERROR_SUCCESS and fills
 structure Envelope\
 If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
 parameters are undefined.\
 If Packet is malformed then returns ERROR_INVALID_DATA. Output
 parameters are undefined.
-
+```
 UInt32 **Ffb_h\_EffNew**(IntPtr Packet, ref FFBEType Effect);
-
+```
 Get the type of the next effect. Parameter **Effect** can get one of the
 following values:
 
@@ -1063,10 +1062,10 @@ If Packet is malformed then returns ERROR_INVALID_DATA. Output
 parameters are undefined.
 
 \[NEW\]
-
+```
 UInt32 **Ffb_h\_Eff_Constant**(IntPtr Packet, ref FFB_EFF_CONSTANT
 ConstantEffect);
-
+```
 Get parameters of an Effect of type Constant (PT_CONSTREP).\
 If Constant Packet was found then returns ERROR_SUCCESS and fills
 structure ConstantEffect\
@@ -1130,33 +1129,27 @@ DLL search path. Usually meaning the same directory as your feeder.
 ### Location of vJoyInterface.dll
 
 vJoy folders are pointed at by registry Entries located under key:\
-HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8E31F76F-74C3-47F1-9550-E041EEDC5FBB}\_is1
+`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8E31F76F-74C3-47F1-9550-E041EEDC5FBB}\_is1`
 
-+------------+--------------------+------------------------------------+  
 | **Entry**  | **Default Value**  | **Notes**                          |  
-+============+====================+====================================+  
+|------------|--------------------|------------------------------------|  
 | Insta      | C:\\Program        | vJoy root folder:\                 |  
 | llLocation | Files\\vJoy\\      | Location of vJoy driver installer  |  
 |            |                    | and uninstaller                    |  
-+------------+--------------------+------------------------------------+  
 | DllX       | C:\\Program        | -   Location of 64-bit utilities   |  
 | 64Location | Files\\vJoy\\x64   |     and libraries                  |  
 |            |                    |                                    |  
 |            |                    | -   Only on 64-bit Machines        |  
-+------------+--------------------+------------------------------------+  
 | DllX       | C:\\Program        | -   Location of 32-bit utilities   |  
 | 86Location | Files\\vJoy\\x86   |     and libraries                  |  
 |            |                    |                                    |  
 |            |                    | -   On 32-bit and 64-bit Machines  |  
-+------------+--------------------+------------------------------------+  
 
 Note that on 64-bit machine you are capable of developing both 32-bit
 and 64-bit feeders.
 
 You can assume that DLL files are located in sub-folders x64 and x32
 under vJoy root folder.
-
-##   {#section-5 .list-paragraph}
 
 ## Logging
 
@@ -1202,8 +1195,6 @@ AcquireVJD()
 AcquireVJD() will write to the same
 
 default output file.
-
-###   {#section-6 .list-paragraph}
 
 ### Log File
 

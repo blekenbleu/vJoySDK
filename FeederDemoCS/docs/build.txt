@@ -1,0 +1,13 @@
+Demo code built and ran, despite VS warnings:
+
+Severity	Code	Description	Project	File	Line	Suppression State
+Warning		There was a mismatch between the processor architecture of the project being built "MSIL" and the processor architecture of the reference
+                "vJoyInterfaceWrap, Version=0.2.0.5, Culture=neutral, processorArchitecture=MSIL", "AMD64".
+                This mismatch may cause runtime failures. Please consider changing the targeted processor architecture of your project
+                through the Configuration Manager so as to align the processor architectures between your project and references,
+                or take a dependency on references with a processor architecture that matches the targeted processor architecture of your project.	FeederDemoCS			
+Message	IDE0059	Unnecessary assignment of a value to 'packet'	FeederDemoCS	E:\my\GitHubDesktop\vJoySDK\FeederDemoCS\Program.cs	121	Active
+Message	IDE1006	Naming rule violation: These words must begin with upper case characters: vJoyFFBReceiver	FeederDemoCS	E:\my\GitHubDesktop\vJoySDK\FeederDemoCS\Program.cs	36	Active
+Message	IDE0075	Conditional expression can be simplified	FeederDemoCS	E:\my\GitHubDesktop\vJoySDK\FeederDemoCS\Program.cs	544	Active
+Message	IDE0075	Conditional expression can be simplified	FeederDemoCS	E:\my\GitHubDesktop\vJoySDK\FeederDemoCS\Program.cs	558	Active
+

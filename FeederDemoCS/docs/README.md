@@ -26,12 +26,12 @@
 [**Build & Deploy**](#build-deploy)  
     - [Location of `vJoyInterface.dll`](#location-of-vjoyinterface.dll)  
 [**Logging**](#logging)  
-    - [Start/Stop Logging](#startstop-logging.)  
+    - [Start/Stop Logging](#startstop-logging)  
     - [Log File](#log-file)  
 
-This SDK includes all that is needed to write a feeder for vJoy version 2.1.8
+This SDK includes everything needed to write a C# feeder application for vJoy version 2.1.8.
 
-Check for the latest [C# SDK](https://github.com/njz3/vJoy/tree/master/SDK/c%23).
+[Check for the latest C# SDK](https://github.com/njz3/vJoy/tree/master/SDK/c%23).
 
 ## File listing
 |                                       |  |                   
@@ -54,10 +54,11 @@ Check for the latest [C# SDK](https://github.com/njz3/vJoy/tree/master/SDK/c%23)
 ---
 
 ## Fundamentals
-This interface and example will enable you to write a C# vJoy feeder.  
-To write a C/C++ refer to ReadMe file in parent folder.  
-Features introduced in versions 2.1.6-2.18 are marked with <font color=#CC0000>**[NEW]**</font>.  
-Derive your feeder application from the supplied example, making changes as needed:  
+This README, interface and example are about writing **C#** vJoy feeders.  
+For **C++ or C**, refer instead to [`ReadMe.odt`](https://github.com/njz3/vJoy/blob/master/SDK/ReadMe.odt)
+in [this folder](https://github.com/njz3/vJoy/tree/master/SDK).  
+Features introduced in vJoy versions 2.1.6-2.18 are marked with <font color=#CC0000>**[NEW]**</font>.  
+Spawn your feeder application from the supplied example, making changes as needed:  
 | Basic steps  |  to follow |
 |--------------|-------------------------------------------------------|  
 | **Test Driver**: | Check that the driver is installed and enabled.   |  
@@ -115,7 +116,7 @@ If uninterested in actual values of respective versions,
 simplify code by passing NULL to both function parameters.
 
 ### Test vJoy Virtual Devices
-VJD stands for *Virtual Joystick Device*.  
+**VJD** stands for *Virtual Joystick Device*.  
 Check if device is installed and what its state:
 ```
 VjdStat status = joystick.GetVJDStatus(id);     // State of requested device
@@ -154,8 +155,8 @@ Console.WriteLine(prt);
 ```
 
 ### Acquire the vJoy Device
-Having inquiried *about* system and vJoy device status,  
-now change the position of the vJoy device you need to *Acquire* it (if it is not already owned):
+Having inquiried *about* system and vJoy device `status`,  
+now change `status` of a target VJD to *Acquired* it (if it is not already):
 ```
 status = joystick.GetVJDStatus(id);     // Write access to vJoy Device - Basic VjdStat status
 // Acquire the target
@@ -167,18 +168,18 @@ Console.WriteLine(prt);
 ```
 
 ### Feed vJoy Device
-The time has come to do some real work:&nbsp; feed position data to the vJoy device.  
+The sender is now ready to feed position data to the VJD.  
 There are two approaches:
 
-1.  **Efficient**: Collect position data, place the data in a position structure then finally send the data to the device.
+1.  **Efficient**: Collect position data, place it in a position structure and send to the VJD.
 
-2.  **Robust**: Reset the device once, then send position data for every control (axis, button, POV) at a time.
+2.  **Robust**: Reset the VJD once, then send position data for each control (axis, button, POV) one at a time.
 
 The first approach is more efficient but requires more code   
-to deal with the position structure that may change in the future.
+to manipulate a position structure *liable to change in the future*.
 
-The second approach hides the details of the data fed to the device  
-at the expense of exessive calls to the device driver.
+The second approach hides details of data fed to the device  
+at the expense of excessive calls to the device driver.
 
 **Efficient**:
 ```
@@ -232,7 +233,7 @@ while (true)
     ZR += 200; if (ZR > maxval) ZR = 0;
 }; // While
 ```
-**If/when the structure changes in the future then code *must also change*.**
+**If/when the `iReport` structure changes in the future, then code *must also change*.**
 
 **Robust**:
 ```
@@ -301,67 +302,55 @@ However, the driver is updated with every `SetAxis()` and every `SetBtn()`.
 
 ### Detecting Changes
 
-To detect changes in the number of available vJoy devices,  
-define a callback function that will be called whenever such a change occurs.  
-To be called, the user-defined callback function should first be registered  
-using `RegisterRemovalCB()` as in the following example:  
-**`joystick.RegisterRemovalCB(ChangedCB, label2);`**  
-... where `ChangedCB` is the user-defined callback function and `label2` is some C# object.
+A callback function detects changes in the number of available vJoy devices,  
+and it is called whenever such changes occurs.  
+To be called, a user-defined callback function is registered  
+using `RegisterRemovalCB()` as in this example:  
+**`joystick.RegisterRemovalCB(ChangedCB, registered);`**  
+... where `ChangedCB` is the user-defined callback function and **`registered`** is some C# object.
 
-An example to an implementation of the user-defined callback function `ChangedCB`:
+An example of user-defined callback function `ChangedCB()`:
 ```
+// Called at start and end of VJD removal and arrival processes
 void CALLBACK ChangedCB(bool Removed, bool First, object userData)
 {
     Label l = userData as Label;
     int id = 1;
     int nBtn = joystick.GetVJDButtonNumber(id);
     // Final values after the last arival
-    if (!removal && !first)
-    {
-        prt = String.Format("Device[{0}]: Buttons={1}" id, nBtn);
-        l.Text = prt;
-    }
-    // Temporary message during intermediate states
-    else
-    {
-        prt = String.Format("Device[{0}]: Wait ...", id);
-        l.Text = prt;
-    }
+    if (!removal && !first) // Temporary message during intermediate states
+        l.Text = prt = String.Format("Device[{0}]: Buttons={1}" id, nBtn);
+    else l.Text = prt = String.Format("Device[{0}]: Wait ...", id);
 }
 ```
-This function is called when a process of vJoy device removal starts or ends  
-and when a process of vJoy device arrival starts or ends. The function must return as soon as possible.
+`ChangedCB()` must return as soon as possible.
+| Parameter `Removed` | Parameter `First` | process |
+|---------------------|-------------------|---------|
+| TRUE                |TRUE               | VJD removal starts |  
+| TRUE                |FALSE              | VJD removal ends |  
+| FALSE               |TRUE               | VJD arrival starts |  
+| FALSE               |FALSE              | VJD arrival ends   |  
 
--   When a process of vJoy device removal starts, Parameter
-    `Removed`=TRUE and parameter `First`=TRUE.
--   When a process of vJoy device removal ends, Parameter `Removed`=TRUE
-    and parameter `First`=FALSE.
--   When a process of vJoy device arrival starts, Parameter
-    `Removed`=FALSE and parameter `First`=TRUE.
--   When a process of vJoy device arrival ends, Parameter `Removed`=
-    FALSE and parameter `First`=FALSE .
-
-Parameter `userData` is always an object registered as second parameter
-of function `RegisterRemovalCB`.
+Parameter `userData` is always object **`registered`** from **`joystick.RegisterRemovalCB(ChangedCB, registered);`**.
 
 ---
 
 ### Receptor Unit
 
-For vJoy to process [**Force Feedback** (FFB)](#ffb-functions) data, add to the feeder a **Receptor** unit,  
-which receives and processes FFB data from a **source application**,  
+To handle vJoy [**Force Feedback** (FFB)](#ffb-functions) data,  
+add a **Receptor** to receive and process FFB data from a **source application**,  
 Processed data may be passed to e.g. a physical joystick as appropriate.
 
-The **Receptor** is activated by **Acquiring** one or more vJoy devices (if not acquired yet),  
-then **Starting** the devices\' FFB capabilities and finally **registering** a single user-defined FFB callback function.
+A **Receptor** activates by **Acquiring** one or more vJoy devices (if not already),  
+**Starting** the devices\' FFB capabilities,
+then **registering** a user-defined FFB *callback function*.
 
-Once registered, the user-defined FFB callback function is called by a
-vJoy device every time a new FFB packet arrives from the **source
-application**. This function is called in the application thread and is
-**blocking**.  
-This means that the FFB callback function *must* return ASAP -- never wait in this function for the next FFB packet!
+Once registered, that user-defined *callback function* is invoked by VJD[s] for each FFB packet  
+from a **source application**.&nbsp;
+This *callback function* executes on the application thread  
+and **blocks**, so it *must* return ASAP -- never waiting e.g. for another FFB packet!
 
-The SDK offers you a wide range of FFB helper-functions to process FFB packets  
+This SDK offers a wide range of FFB helper-functions to process FFB packets  
 and a demo application that demonstrates usage of helper-functions,  
 which are efficient and can be used inside the FFB callback function.
 
@@ -383,41 +372,33 @@ public FfbInterface(TesterForm dialog)
 }
 ```
 
-The FFB callback function is user defined.&nbsp; Its interface is:  
+The FFB *callback function* is user-defined.&nbsp; Its interface is:  
 **`private static void OnEffectObj(IntPtr data, object userData)`**  
 ... where:
 * `OnEffectObj` is the user-defined callback function.  
-* Parameter `data` is a pointer to a C-language data packet (Type
-`FFB_DATA`) arriving from the vJoy device.
+* Parameter `data` is a pointer to a C-language data packet (Type `FFB_DATA`) arriving from the vJoy device.
 * Parameter `userData` is a user-defined object.  
-You need not understand the `FFB_DATA` structure -- just pass it to the various FFB
-helper-functions.
+You need not understand the `FFB_DATA` structure -- just pass it to the various FFB helper-functions.
 
 **Structure `FFB_DATA`:**
 
-Normally, you need not understand this structure as it is
-usually passed to the various helper function.  
+This structure normally needs not be understood,
+as it is usually passed to the various helper function.  
 However, you might want to access raw FFB packets.
 ```
 typedef struct _FFB_DATA {
-    ULONG size;
-    ULONG cmd;
-    UCHAR *data;
+    ULONG size;         // Size of FFB_DATA structure in bytes
+    ULONG cmd;          // Reserved
+    UCHAR *data;        // Array of size-8 bytes holding the FFB packet
 } FFB_DATA;
 ```
-
-FFB_DATA Fields:  
-`size`: Size of FFB_DATA structure in bytes  
-`cmd`: Reserved  
-`data`: Array of size-8 bytes holding the FFB packet.
 
 **FFB Helper Functions:**
 
 These functions receive a pointer to FFB_DATA as their first parameter and return a `uint` status.  
 Returned values are either <font color=green>`ERROR_SUCCESS`</font> on success or other values on failure.
 
-Use these functions to analyze FFB data packets, avoiding direct
-access to the raw FFB_DATA structure.
+Use these functions to analyze FFB data packets, avoiding direct access to the raw FFB_DATA structure.
 
 ---
 
@@ -553,11 +534,10 @@ HID_USAGES.HID_USAGE_WHL // Wheel
 The following functions receive the virtual device `ID(rID)` and return the relevant data.  
 These functions hide position data structure details by
 altering the value of a specific control. The downside of
-these functions is that you inject the data to the device serially as
-opposed to function `UpdateVJD()`.
+these functions is injecting data to the device serially as opposed to function `UpdateVJD()`.
 
-The value of `rID` may vary between 1 and 16. There may be more than one
-virtual device installed on a given system.
+`rID` may vary between 1 and 16.
+There may be more than one virtual device installed on a given system.
 
 **`bool ResetVJD(UInt32 rID);`**  
 Resets all the controls of the specified device to a set of values.  
@@ -656,8 +636,9 @@ HID_USAGE_FRIC (0x43):&nbsp; Usage ET Friction
 ### FFB Helper Functions
 
 **`UInt32 Ffb_h_DeviceID(IntPtr Packet, ref int DeviceID);`**  
-Get the origin of the FFB data packet.
-If valid device ID was found then returns ERROR_SUCCESS and sets the ID (Range 1-15) in `DeviceID`.  
+Get the origin of the FFB data packet.&nbsp;
+If valid device ID was found then returns ERROR_SUCCESS  
+and sets the ID (Range 1-15) in `DeviceID`.  
 If Packet is NULL then returns ERROR_INVALID_PARAMETER. DeviceID is undefined.  
 If Packet is malformed or Device ID is out of range then returns ERROR_INVALID_DATA. DeviceID is undefined.
 
@@ -694,15 +675,16 @@ Extract the raw FFB data packet and the command type (Write/Set Feature).
 If valid Packet was found then returns ERROR_SUCCESS and  
 -  Sets `Type` to IOCTRL value (Expected values are IOCTL_HID_WRITE_REPORT and IOCTL_HID_SET_FEATURE).  
 - Sets `DataSize` to the size (in bytes) of the payload data (FFB_DATA.data ).  
-- Sets `Data` to the payload data (FFB_DATA.data ) - this is an array of bytes.  
+- Sets `Data` to the payload data (FFB_DATA.data ) - this is an array of bytes.
+
 If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output parameters are undefined.  
 If Packet is malformed then returns ERROR_INVALID_DATA. Output parameters are undefined.
 
-**`UInt32 Ffb_h\_EBI(IntPtr Packet, ref Int32 Index);         // Get the Effect Block Index`**  
-If valid Packet was found then returns ERROR_SUCCESS and sets `Index`
-to the value of Effect Block Index (if applicable). Expected value is `'1'`.  
-If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output parameters are undefined.  
-If Packet is malformed or does not contain an Effect Block Index then returns ERROR_INVALID_DATA. Output parameters are undefined.  
+**`UInt32 Ffb_h_EBI(IntPtr Packet, ref Int32 Index);         // Get the Effect Block Index`**  
+If valid Packet was found then returns ERROR_SUCCESS  
+and sets `Index` to Effect Block Index value (if applicable);&nbsp; expected value is `'1'`.  
+Otherwise, `Ffb_h_EBI()` returns ERROR_INVALID_PARAMETER for NULL Packets or ERROR_INVALID_DATA
+if packets are malformed or do not contain an Effect Block Index, with `Index` undefined.  
 
 **`UInt32 Ffb_h_Eff_Const(IntPtr Packet, ref FFB_EFF_CONST Effect);`**  
 Get parameters of an Effect of type Constant (PT_EFFREP).  
@@ -771,13 +753,13 @@ public struct FFB_EFF_OP
     public Byte LoopCount;
 }
 ```
-If Operation Effect Packet was found then returns ERROR_SUCCESS and fills structure Operation  
-- this structure holds Effect Block Index, Operation(Start, Start Solo, Stop) and Loop Count.  
-If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output parameters are undefined.  
-If Packet is malformed then returns ERROR_INVALID_DATA. Output parameters are undefined.
+If Operation Effect Packet was found, `Ffb_h_EffOp()` returns ERROR_SUCCESS and fills structure Operation,  
+which holds Effect Block Index, Operation(Start, Start Solo, Stop) and Loop Count.  
+`Ffb_h_EffOp()` returns ERROR_INVALID_PARAMETER if NULL packet  
+else ERROR_INVALID_DATA if Packet is malformed;&nbsp; `Operation` will be undefined.
 
 **`UInt32 Ffb_h_Eff_Period(IntPtr Packet, ref FFB_EFF_PERIOD Effect);`**  
-Get parameters of an Effect of type Periodic (PT_PRIDREP) that describe the periodic attribute of an effect.  
+Get parameters of an Effect of type Periodic (PT_PRIDREP) that describe periodic attribute of an effect.  
 Effect structure (FFB_EFF_PERIOD) definition:
 ```
 public struct FFB_EFF_PERIOD
@@ -913,13 +895,12 @@ DLLs must be on user PCs\'s DLL search path, typically in the feeder application
 ### Location of `vJoyInterface.dll`
 
 vJoy folders are pointed at by registry Entries located under key:  
-**`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{8E31F76F-74C3-47F1-9550-E041EEDC5FBB}\_is1`
-
+`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{8E31F76F-74C3-47F1-9550-E041EEDC5FBB}\_is1`
 | **Entry**  | **Default Value**  | **Notes**                          |  
 |------------|--------------------|------------------------------------|  
-| Install Location | `C:\Program Files\vJoy\`  | vJoy root folder:&nbsp; vJoy driver installer and uninstaller  
-| dll X64 Location | `C:\Program Files\vJoy\x64` |  64-bit utilities and libraries **only on 64-bit Machines:** |  
-| dll X86 Location | `C:\Program Files\vJoy\x86`  | 32-bit utilities and libraries on 32- and 64-bit Machines   |  
+| `InstallLocation` | `C:\Program Files\vJoy\` | vJoy root folder:&nbsp; vJoy driver installer and uninstaller  
+| `DllX64Location` | `C:\Program Files\vJoy\x64` |  64-bit utilities and libraries **only on 64-bit Machines:** |  
+| `DllX86Location` | `C:\Program Files\vJoy\x86`  | 32-bit utilities and libraries on 32- and 64-bit Machines   |  
 
 64-bit machines can build both 32-bit and 64-bit feeders.  
 DLL files are located in sub-folders x64 and x32 under vJoy root folder.

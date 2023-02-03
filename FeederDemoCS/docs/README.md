@@ -8,29 +8,28 @@
 [File listing: 2](#file-listing)  
 [Fundamentals: 3](#fundamentals)  
 [Reccomended Practices: 4](#reccomended-practices)  
-[Test vJoy Driver: 4](#test-vjoy-driver)  
-[Test Interface DLL matches vJoy Driver: 4](#test-interface-dll-matches-vjoy-driver)  
-[Test vJoy Virtual Devices: 5](#test-vjoy-virtual-devices)  
-[Acquire the vJoy Device: 6](#acquire-the-vjoy-device)  
-[Feed vJoy Device: 6](#feed-vjoy-device)  
-[Relinquish the vJoy Device: 9](#relinquish-the-vjoy-device)  
-[Detecting Changes 9](#detecting-changes)  
-[Receptor Unit 10](#receptor-unit)  
+    - [Test vJoy Driver: 4](#test-vjoy-driver)  
+    - [Test Interface DLL matches vJoy Driver: 4](#test-interface-dll-matches-vjoy-driver)  
+    - [Test vJoy Virtual Devices: 5](#test-vjoy-virtual-devices)  
+    - [Acquire the vJoy Device: 6](#acquire-the-vjoy-device)  
+    - [Feed vJoy Device: 6](#feed-vjoy-device)  
+    - [Relinquish the vJoy Device: 9](#relinquish-the-vjoy-device)  
+    - [Detecting Changes 9](#detecting-changes)  
+    - [Receptor Unit 10](#receptor-unit)  
 [Interface Function Reference: 12](#interface-function-reference)  
-[General driver data 12](#general-driver-data)  
-[Write access to vJoy Device 12](#write-access-to-vjoy-device)  
-[vJoy Device properties 13](#vjoy-device-properties)  
-[Robust write access to vJoy Devices 15](#robust-write-access-to-vjoy-devices)  
-[FFB Functions 16](#ffb-functions)  
-[FFB Helper Functions 16](#ffb-helper-functions)  
+    - [General driver data 12](#general-driver-data)  
+    - [Write access to vJoy Device 12](#write-access-to-vjoy-device)  
+    - [vJoy Device properties 13](#vjoy-device-properties)  
+    - [Robust write access to vJoy Devices 15](#robust-write-access-to-vjoy-devices)  
+    - [FFB Functions 16](#ffb-functions)  
+    - [FFB Helper Functions 16](#ffb-helper-functions)  
 [Build & Deploy: 21](#build-deploy)  
-[Location of vJoyInterface.dll 21](#location-of-vjoyinterface.dll)  
+    - [Location of `vJoyInterface.dll` 21](#location-of-vjoyinterface.dll)  
 [Logging 22](#logging)  
-[Start/Stop Logging. 22](#startstop-logging.)  
-[Log File 23](#log-file)  
+    - [Start/Stop Logging. 22](#startstop-logging.)  
+    - [Log File 23](#log-file)  
 
-This SDK includes all that is needed to write a feeder for vJoy version
-2.1.8
+This SDK includes all that is needed to write a feeder for vJoy version 2.1.8
 
 Check for the latest
 [SDK](https://sourceforge.net/projects/vjoystick/files/Beta 2.x/SDK).
@@ -39,123 +38,77 @@ Check for the latest
 
 ## File listing:
 
-  --------------------------------------- -----------------------------------------
                                           
 
-  **c#**                                  C# SDK (This folder)
-
-  **x86**                                 Library folder (x86)
-
-  **x86\\vJoyInterface.dll**              vJoy Interface DLL file (32-bit version)
-
-  **x86\\vJoyInterface.pdb**              Program Database -- Use it for debugging
-                                          (32-bit version)
-
-  **x86\\vJoyInterfaceWrap.dll**          vJoy c# wrapper DLL
-
-  **x64**                                 Library folder (x64)
-
-  **x64\\vJoyInterface.dll**              vJoy Interface DLL file (64-bit version)
-
-  **x64\\vJoyInterface.pdb**              Program Database -- Use it for debugging
-                                          (64-bit version)
-
-  **x64\\vJoyInterfaceWrap.dll**          vJoy c# wrapper DLL
-
-  **FeederDemoCS**                        Demo Feeder Project (Visual Studio 2008
-                                          Express)
-
-  **FeederDemoCS\\Program.cs**            C# code that demonstrates writing a
-                                          simple feeder
-
-  **FeederDemoCS\\FeederDemoCS.csproj**   Demo Feeder Project file (Visual Studio
-                                          2008 Express)
-  --------------------------------------- -----------------------------------------
-
-  ----------------------------------------------- -----------------------------------------
-  **FeederDemoCS\\FeederDemoCS.sln**              Demo Feeder solution file (Visual Studio
-                                                  2008 Express)
-
-  **FeederDemoCS\\Properties\\AssemblyInfo.cs**   Demo Feeder properties file (Visual
-                                                  Studio 2008 Express)
-  ----------------------------------------------- -----------------------------------------
+|                                        |  |                   
+|---------------------------------------|-----------------------------------------|
+| **c#**                                 |C# SDK (This folder)
+| **x86**                                |Library folder (x86)|
+| **x86\\vJoyInterface.dll**             |vJoy Interface DLL file (32-bit version) |
+| **x86\\vJoyInterface.pdb**             |Program Database -- Use it for debugging (32-bit version) |
+| **x86\\vJoyInterfaceWrap.dll**         |vJoy c# wrapper DLL |
+| **x64**                                |Library folder (x64) |
+| **x64\\vJoyInterface.dll**            | vJoy Interface DLL file (64-bit version) |
+| **x64\\vJoyInterface.pdb**            | Program Database -- Use it for debugging (64-bit version) |
+| **x64\\vJoyInterfaceWrap.dll**        | vJoy c# wrapper DLL |
+| **FeederDemoCS**                      | Demo Feeder Project (Visual Studio 2008 Express) |
+| **FeederDemoCS\\Program.cs**          | C# code that demonstrates writing a simple feeder |
+| **FeederDemoCS\\FeederDemoCS.csproj** | Demo Feeder Project file (Visual Studio 2008 Express) |
+| **FeederDemoCS\\FeederDemoCS.sln**            | Demo Feeder solution file (Visual Studio 2008 Express) |
+| **FeederDemoCS\\Properties\\AssemblyInfo.cs** | Demo Feeder properties file (Visual Studio 2008 Express) |
 
 ## Fundamentals:
 
-This interface and example will enable you to write a C# vJoy feeder.
+This interface and example will enable you to write a C# vJoy feeder.  
+To write a C/C++ refer to ReadMe file in parent folder.  
+Features introduced in versions 2.1.6-2.18 are marked with \[NEW\].  
+Start your feeder from the supplied example, making changes as needed:  
 
-To write a C/C++ refer to ReadMe file in parent folder.
-
-Features introduced in versions 2.1.6-2.18 are marked with \[NEW\]
-
-It is advisable to start your feeder from the supplied example and make
-the needed changes. Here are the five basic steps you might want to
-follow:
-
-| Basic steps  |  details |
+| Basic steps  |  to follow |
 |--------------|-------------------------------------------------------|  
 | **Test Driver**: | Check that the driver is installed and enabled.   |  
-|              |                                                       |  
 |              | Obtain information about the driver.                  |  
-|              |                                                       |  
 |              | An installed driver implies at least one vJoy device. |  
-|              |                                                       |  
-|              | Test if driver matches interface DLL file             |  
-|              | (vJoyInterface.dll)                                   |  
-|--------------|-------------------------------------------------------|  
-| **Test       | Get information regarding one or more devices.        |  
-| Virtual      |                                                       |  
-| Device(s)**: | Read information about a specific device              |  
-|              | capabilities: Axes, buttons and POV hat switches.     |  
-|--------------|-------------------------------------------------------|  
-| **Device     | Obtain status of a vJoy device.                       |  
-| ac           |                                                       |  
-| quisition**: | Acquire the device if the device status is *owned* or |  
-|              | is *free.*                                            |  
-|--------------|-------------------------------------------------------|  
-| *            | Inject [position data]{.underline} to a device (as    |  
-| *Updating**: | long as the device is owened by the feeder).          |  
-|              |                                                       |  
+|              | Test if driver matches interface DLL file (vJoyInterface.dll) |  
+| **Test Virtual Device(s)**: | Get information regarding one or more devices. |
+|              | Read information about a specific device capabilities:|  
+|              | Axes, buttons and POV hat switches.     |  
+| **Device acquisition**:    | Obtain status of a vJoy device.         |  
+|              | Acquire the device if its status is *owned* or is *free.* |  
+| **Updating**:| Inject *position data*{.underline} to a device (as    |  
+|              | long as the device is owened by the feeder).          |  
 |              | Position data includes the position of the axes,      |  
-|              | state of the buttons and state of the POV hat         |  
-|              | switches.                                             |  
-|--------------|-------------------------------------------------------|  
-| **R          | The device is *owned* by the feeder and cannot be fed |  
-| elinquishing | by another application until relinquished.            |  
-| the          |                                                       |  
-| device**:    |                                                       |  
-|--------------|-------------------------------------------------------|  
+|              | state of the buttons and state of the POV hat switches. |  
+| **Relinquishing the device**:| The device is *owned* by the feeder  |  
+|              | and cannot be fed by another application until relinquished. |  
 
 *Notes:*
 
-1.  The interface library file (vJoyInterface.dll) and the wrapper
-    library (vJoyInterfaceWrap.dll) must be placed together.
+1.  Interface library (`vJoyInterface.dll`) and wrapper
+    library (`vJoyInterfaceWrap.dll`) must be placed together.
 
 2.  The feeder must use **using** directive:\
-    using vJoyInterfaceWrap;
+    `using vJoyInterfaceWrap;`
 
-3.  Wrapper only class is vJoy: Start your application by creating a
-    **vJoy** object:\
-    joystick = new vJoy();
+3.  Wrapper only class is vJoy:&nbsp; Start your application by creating a **vJoy** object:\
+    `joystick = new vJoy();`
 
 ## Reccomended Practices:
 
 ### Test vJoy Driver:
 
-Before you start, check if the vJoy driver is installed and check that
-it is what you expected:
+Before starting, [**verify** vJoy driver installation](https://blekenbleu.github.io/pedals/vJoy/).
 
 ### 
 
 ### Test Interface DLL matches vJoy Driver:
 
-Before you start, check if file vJoyInterface.dll that you link to
-matches the vJoy driver that is installed. It is recommended that their
-version numbers will be identical.
+Before you start, check if file `vJoyInterface.dll` that you link to
+matches the vJoy driver that is installed.  
+It is recommended that their version numbers will be identical.
 
-If you are not interested in the actual values of the respective version
-numbers, you can simplify your code by passing NULL to both function
-parameters.
+If you are not interested in the actual values of the respective version numbers,  
+you can simplify your code by passing NULL to both function parameters.
 
 ### Test vJoy Virtual Devices:
 
@@ -168,10 +121,8 @@ expected:
 
 ### Acquire the vJoy Device:
 
-Until now you just made inquiries [about]{.underline} the system and
-[about]{.underline} the vJoy device status. In order to change the
-position of the vJoy device you need to [Acquire]{.underline} it (if it
-is not already owned):
+Until now you just made inquiries *about* the system and *about* the vJoy device status.  
+To change the position of the vJoy device you need to *Acquire* it (if it is not already owned):
 
 ### 
 
@@ -182,17 +133,15 @@ position data.
 
 There are two approaches:
 
-1.  **Efficient**: Collect position data, place the data in a position
-    structure then finally send the data to the device.
+1.  **Efficient**: Collect position data, place the data in a position structure then finally send the data to the device.
 
-2.  **Robust**: Reset the device once then send the position data for
-    every control (axis, button,POV) at a time.
+2.  **Robust**: Reset the device once, then send position data for every control (axis, button,POV) at a time.
 
-The first approach is more efficient but requires more code to deal with
-the position structure that may change in the future.
+The first approach is more efficient but requires more code   
+to deal with the position structure that may change in the future.
 
-The second approach hides the details of the data fed to the device at
-the expence of exessive calls to the device driver.
+The second approach hides the details of the data fed to the device  
+at the expence of exessive calls to the device driver.
 
 **Efficient**:
 
@@ -201,7 +150,7 @@ too.
 
 **Robust**:
 
-This code is readable and does not relay on any specific structure.
+This code is readable and does not relay on any specific structure.  
 However, the driver is updated with every *SetAxis()* and every
 *SetBtn()*.
 
@@ -211,19 +160,14 @@ You must relinquish the device when the driver exits:
 
 ### Detecting Changes
 
-It is sometimes necessary to detect changes in the number of available
-vJoy devices.
+If detecting changes in the number of available vJoy devices is required,  
+define a callback function that will be called whenever such a change occurs.  
+To be called, the user-defined callback function should first be registered  
+by calling function `RegisterRemovalCB` as in the following example:
 
-You may define a callback function that will be called whenever such a
-change occurs. In order for it to be called, the user-defined callback
-function should first be registered by calling function
-*RegisterRemovalCB* as in the following example:
+Where `ChangedCB` is the user-defined callback function and `label2` is some C# object.
 
-Where ChangedCB is the user-defined callback function and label2 is some
-C# object.
-
-An example to an implementation of the user-defined callback function
-ChangedCB:
+An example to an implementation of the user-defined callback function `ChangedCB`:
 
 This function is called when a process of vJoy device removal starts or
 ends and when a process of vJoy device arrival starts or ends. The
@@ -246,70 +190,59 @@ of function *RegisterRemovalCB*.
 
 ### Receptor Unit
 
-To take advantage of vJoy ability to process **Force Feedback** (FFB)
-data, you need to add a **receptor** unit to the feeder.
+For vJoy to process **Force Feedback** (FFB) data, add to the feeder a **Receptor** unit,  
+which receives and processes FFB data from a **source application** ,
+Processed data may be passed on to another entity (e.g. a physical joystick) as appropriate.
 
-The receptor unit receives the FFB data from a **source application**,
-and processes the FFB data. The data can be passed on to another entity
-(e.g. a physical joystick) or processed in place.
-
-The Receptor is activated by **Acquiring** one or more vJoy devices (if
-not acquired yet), then **Starting** the devices\' FFB capabilities and
-finally **registering** a single user-defined FFB callback function.
+The **Receptor** is activated by **Acquiring** one or more vJoy devices (if not acquired yet),  
+then **Starting** the devices\' FFB capabilities and finally **registering** a single user-defined FFB callback function.
 
 Once registered, the user-defined FFB callback function is called by a
 vJoy device every time a new FFB packet arrives from the **source
 application**. This function is called in the application thread and is
-**blocking**. This means that you must return from the FFB callback
-function ASAP -- never wait in this function for the next FFB packet!
+**blocking**. This means that the FFB callback function *must* return ASAP -- never wait in this function for the next FFB packet!
 
-The SDK offers you a wide range of FFB helper-functions to process the
-FFB packet and a demo application that demonstrates the usage of the
-helper-functions. The helper-functions are efficient and can be used
-inside the FFB callback function.
+The SDK offers you a wide range of FFB helper-functions to process FFB packets  
+and a demo application that demonstrates usage of helper-functions,  
+which are efficient and can be used inside the FFB callback function.
 
-Start a vJoy device\' FFB capabilities by calling function
-*FfbStart()*.\
-Register a user-defined FFB callback function by calling
-*FfbRegisterGenCB()*.
+Start a vJoy device\' FFB capabilities by calling function `FfbStart()`.  
+Register a user-defined FFB callback function by calling `FfbRegisterGenCB()`.
 
-The FFB callback function is defined by the user. The function interface
-is as follows:
+The FFB callback function is user defined.&nbsp; Its interface is as follows:
 
-Where *OnEffectObj* is the name of the user-defined callback function.
-Parameter *data* is a pointer to a C-language data packet (Type
-FFB_DATA) arriving from the vJoy device. Parameter *userData* is a
+Where `OnEffectObj` is the name of the user-defined callback function.
+Parameter `data` is a pointer to a C-language data packet (Type
+`FFB_DATA`) arriving from the vJoy device. Parameter `userData` is a
 user-defined object. You are not required to understand the structure of
-the FFB_DATA structure -- just pass it to the the various FFB
+the `FFB_DATA` structure -- just pass it to the the various FFB
 helper-functions.
 
-**Structure FFB_DATA:**
+**Structure `FFB_DATA`:**
 
 Normally, you are not required to understand this structure as it is
-usually passed to the various helper function. However, you might want
-to access the raw FFB packet.
+usually passed to the various helper function.  
+However, you might want to access raw FFB packets.
 
-FFB_DATA Fields:
-
+FFB_DATA Fields:  
 **size**: Size of FFB_DATA structure in bytes\
 **cmd**: Reserved\
 **data**: Array of size-8 bytes holding the FFB packet.
 
 **FFB Helper Functions:**
 
-These functions receive a pointer to FFB_DATA as their first parameter
-and return a **uint** status. The returned value is either ERROR_SUCCESS
-on success or other values on failure.
+These functions receive a pointer to FFB_DATA as their first parameter and return a `uint` status.  
+Returned values are either `ERROR_SUCCESS` on success or other values on failure.
 
-Use these functions to analyze the FFB data packets avoiding direct
+Use these functions to analyze FFB data packets, avoiding direct
 access to the raw FFB_DATA structure.
 
 ## Interface Function Reference:
 
 ### General driver data
 
-The following functions return general data regarding the installed vJoy
-device driver. It is recommended to call them when starting your feeder.
+The following functions return general data regarding the installed vJoy device driver.  
+Calling them when starting a feeder is recommended.
 
 bool **vJoyEnabled**();
 
@@ -317,20 +250,17 @@ Returns true if vJoy version 2.x is installed and enabled.
 
 short **GetvJoyVersion**();
 
-Return the version number of the installed vJoy. To be used only after
-vJoyEnabled()
-
-string **GetvJoyProductString**();
-
-string **GetvJoyManufacturerString**();
-
-string **GetvJoySerialNumberString**();
-
+Return the installed vJoy version number, to be used only after `vJoyEnabled()`  
+```
+string GetvJoyProductString();
+string GetvJoyManufacturerString();
+string GetvJoySerialNumberString();
+```
 To be used only after vJoyEnabled()
 
-bool **DriverMatch**(ref UInt32 DllVer, ref UInt32 DrvVer);
+`bool **DriverMatch**(ref UInt32 DllVer, ref UInt32 DrvVer`);
 
-Returns TRUE if vJoyInterface.dll file version and vJoy Driver version
+Returns TRUE if `vJoyInterface.dll` file version and vJoy Driver version
 are identical. Otherwise returns FALSE.
 
 Optional output parameter *DllVer*: If a reference to 32-bit unsigned
@@ -343,17 +273,17 @@ written to this parameter (e.g. 0x205).
 
 void **RegisterRemovalCB**(RemovalCbFunc cb, object data);
 
-This function registers a user-defined **cb** callback fuction that is
+This function registers a user-defined `cb` callback fuction that is
 called everytime a vJoy device is added or removed.
 
-Parameter *cb* is a reference to the user-defined callback function.
+Parameter `cb` is a reference to the user-defined callback function.
 
-Parameter *data* is a pointer to a user-defined object. The callback
+Parameter `data` is a pointer to a user-defined object. The callback
 function recieves this object as its third parameter.
 
 The user-defined callback function type definition:
 
-void RemovalCbFunc(bool complete, bool First, object userData);
+`void RemovalCbFunc(bool complete, bool First, object userData);`
 
 More in section [Detecting Changes](#detecting-changes).
 
@@ -366,9 +296,7 @@ There may be more than one virtual device installed on a given system.
 
 VJD stands for *Virtual Joystick Device*.
 
-VjdStat **GetVJDStatus**(UInt32 rID);
-
-Returns the status of the specified device
+`VjdStat GetVJDStatus(UInt32 rID);` &nbsp; // Returns status of the specified device
 
 The status can be one of the following values:
 
@@ -387,7 +315,7 @@ The status can be one of the following values:
 
 \[NEW\]
 
-bool **isVJDExists**(UInt32 rID);
+`bool isVJDExists(UInt32 rID);`
 
 Returns TRUE if the specified device exists (Configured and enabled).
 
@@ -846,8 +774,7 @@ public struct FFB_EFF_RAMP
 
 public Byte EffectBlockIndex;
 
-public Byte Start; // The Normalized magnitude at the start of the
-effect
+public Byte Start; // The Normalized magnitude at the start of the effect
 
 public Byte End; // The Normalized magnitude at the end of the effect
 
@@ -899,7 +826,7 @@ Get parameters of an Effect of type Periodic (PT_PRIDREP) that describe
 the periodic attribute of an effect.
 
 Effect structure (FFB_EFF_PERIOD) definition:
-
+```
 public struct FFB_EFF_PERIOD
 
 {
@@ -931,8 +858,7 @@ structure Effect -- this structure holds Effect Block Index, Magnitude,
 Offset, Phase and period.\
 If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
 parameters are undefined.\
-If Packet is malformed then returns ERROR_INVALID_DATA. Output
-parameters are undefined.
+If Packet is malformed then returns ERROR_INVALID_DATA. Output parameters are undefined.
 ```
 UInt32 **Ffb_h\_Eff_Cond**(IntPtr Packet, ref FFB_EFF_COND Condition);
 
@@ -1061,52 +987,34 @@ parameters are undefined.\
 If Packet is malformed then returns ERROR_INVALID_DATA. Output
 parameters are undefined.
 
-\[NEW\]
+\[NEW\]  
+`UInt32 **Ffb_h\_Eff_Constant**(IntPtr Packet, ref FFB_EFF_CONSTANT ConstantEffect);`  
+Get parameters of an Effect of type Constant (PT_CONSTREP).   
+If Constant Packet was found then returns ERROR_SUCCESS and fills structure ConstantEffect.  
+If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output parameters are undefined.  
+If Packet is malformed then returns ERROR_INVALID_DATA. Output parameters are undefined.  
+
+`UInt32 Ffb_h_DevCtrl(IntPtr Packet, ref FFB_CTRL Control);`
+
+Get device-wide control instructions. `Control` can get one of the following values:  
 ```
-UInt32 **Ffb_h\_Eff_Constant**(IntPtr Packet, ref FFB_EFF_CONSTANT
-ConstantEffect);
-```
-Get parameters of an Effect of type Constant (PT_CONSTREP).\
-If Constant Packet was found then returns ERROR_SUCCESS and fills
-structure ConstantEffect\
-If Packet is NULL then returns ERROR_INVALID_PARAMETER. Output
-parameters are undefined.\
-If Packet is malformed then returns ERROR_INVALID_DATA. Output
-parameters are undefined.
-
-UInt32 **Ffb_h\_DevCtrl**(IntPtr Packet, ref FFB_CTRL Control);
-
-Get device-wide control instructions. **Control** can get one of the
-following values:
-
-CTRL_ENACT = 1 // Enable all device actuators.
-
-CTRL_DISACT = 2 // Disable all the device actuators.
-
-CTRL_STOPALL = 3 // Stop All Effects­ Issues a stop on every running
-effect.
-
-CTRL_DEVRST = 4 // Device Reset
-
-// Clears any device paused condition,
-
-// enables all actuators and clears all effects from memory.
-
+CTRL_ENACT   = 1  // Enable all device actuators.
+CTRL_DISACT  = 2  // Disable all the device actuators.
+CTRL_STOPALL = 3  // Stop All Effects­ Issues a stop on every running effect.
+CTRL_DEVRST  = 4  // Device Reset
+                  // Clears any device paused condition,
+                  // enables all actuators and clears all effects from memory.
 CTRL_DEVPAUSE = 5 // Device Pause
+                  // All effects on the device are paused
+                  // at the current time step.
+CTRL_DEVCONT = 6  // Device Continue
+                  // All effects that running when the
+                  // device was paused are restarted from their last time step.
+```
 
-// All effects on the device are paused
+`UInt32 Ffb_h_DevGain(IntPtr Packet, ref Byte Gain);`  
 
-// at the current time step.
-
-CTRL_DEVCONT = 6 // Device Continue
-
-// All effects that running when the
-
-// device was paused are restarted from their last time step.
-
-UInt32 Ffb_h\_DevGain(IntPtr Packet, ref Byte Gain);
-
-Get device Global gain in parameter **Gain**.
+Get device Global gain in parameter `Gain`.
 
 If valid Packet was found then returns ERROR_SUCCESS and gets the device
 global gain.\
@@ -1122,50 +1030,36 @@ demo project written in C# under Visual Studio 2008 Express. It will
 compile as-is for x86/x64 target machines.
 
 When you deploy your feeder, don\'t forget to supply the user with files
-vJoyInterface.dll and vJoyInterfaceWrap.dll of the [correct
-bitness]{.underline}. They should be located on the target machine\'s
-DLL search path. Usually meaning the same directory as your feeder.
+`vJoyInterface.dll` and `vJoyInterfaceWrap.dll` of the *correct bitness*{.underline}.  
+They should be located on the target machine\'s DLL search path, typically the same directory as your feeder.
 
-### Location of vJoyInterface.dll
+### Location of `vJoyInterface.dll`
 
 vJoy folders are pointed at by registry Entries located under key:\
-`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{8E31F76F-74C3-47F1-9550-E041EEDC5FBB}\_is1`
+`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{8E31F76F-74C3-47F1-9550-E041EEDC5FBB}\_is1`
 
 | **Entry**  | **Default Value**  | **Notes**                          |  
 |------------|--------------------|------------------------------------|  
-| Insta      | C:\\Program        | vJoy root folder:\                 |  
-| llLocation | Files\\vJoy\\      | Location of vJoy driver installer  |  
-|            |                    | and uninstaller                    |  
-| DllX       | C:\\Program        | -   Location of 64-bit utilities   |  
-| 64Location | Files\\vJoy\\x64   |     and libraries                  |  
-|            |                    |                                    |  
-|            |                    | -   Only on 64-bit Machines        |  
-| DllX       | C:\\Program        | -   Location of 32-bit utilities   |  
-| 86Location | Files\\vJoy\\x86   |     and libraries                  |  
-|            |                    |                                    |  
-|            |                    | -   On 32-bit and 64-bit Machines  |  
+| Install Location | `C:\Program Files\vJoy\`  | vJoy root folder:&nbsp; vJoy driver installer and uninstaller  
+| dll X64 Location | `C:\Program Files\vJoy\x64` |  64-bit utilities and libraries **only on 64-bit Machines:** |  
+| dll X86 Location | `C:\Program Files\vJoy\x86`  | 32-bit utilities and libraries on 32- and 64-bit Machines   |  
 
-Note that on 64-bit machine you are capable of developing both 32-bit
-and 64-bit feeders.
-
-You can assume that DLL files are located in sub-folders x64 and x32
-under vJoy root folder.
+64-bit machines can build both 32-bit and 64-bit feeders.  
+DLL files are located in sub-folders x64 and x32 under vJoy root folder.
 
 ## Logging
 
-Logging of vJoyInterface.dll activity into a log file is an option.\
-Use this feature for debugging purposes only. It accumulates data into
-the log file and generally slows down the system.
+Logging of `vJoyInterface.dll` activity into a log file is optional.  
+Use this feature for debugging purposes only.  
+It accumulates data in the log file and generally slows down the system.
 
-This feature is intended both for helping you develop your feeder and to
-collect data at the user\'s location -- provided the user is willing to
-trigger logging for you. By default, logging state is OFF.
+This feature is intended both to help develop feeders and collect data at user locations,  
+ -- provided users are willing to trigger logging. By default, logging state is OFF.
 
 ### Start/Stop Logging.
 
-To start logging, there are one or two system environment variables that
-have to be changed before the feeder (Or any other application calling
-vJoyInterface.dll) is started.
+To start logging, one or two system environment variables must change  
+before any application calling `vJoyInterface.dll`) is started.
 
 > • VJOYINTERFACELOGLEVEL:\
 > Any positive value will trigger logging.\
@@ -1177,44 +1071,27 @@ vJoyInterface.dll) is started.
 
 **Example**:
 
-![](image1.png)
-**Notes**:
+![](image1.png)  
+**Notes**:  
+• This session of vJoyFeeder will log into the given file.  
+• If the file exists, it will append the new data to the existing file.  
+• To stop logging, kill vJoyFeeder and then close this window.  
 
-• This session of vJoyFeeder will log into the given file.
-
-• If the file exists, it will append the new data to the existing file.
-
-• To stop logging, kill vJoyFeeder and then close this window.
-
-**Limitations**:
-
-• Logging begins on the application\'s first call to function
-AcquireVJD()
-
-• If VJOYINTERFACELOGFILE is not defined, all applications that call
-AcquireVJD() will write to the same
-
-default output file.
+**Limitations**:  
+• Logging begins on the application\'s first call to function AcquireVJD()  
+• If VJOYINTERFACELOGFILE is not defined,  
+all applications calling `AcquireVJD()` will write to the same default output file.
 
 ### Log File
 
-The log file contains information about vJoyInterface.dll values, states
-and functions. It is mainly useful in
+The log file contains information about `vJoyInterface.dll` values, states and functions.  
+It is mainly useful in conjunction with the code.
 
-conjunction with the code.
-
-Here is a snippet of a log file:
-
-You can see the end of one process (Process ids are in brackets) and the
-beginning of a second process. The first line referring the second
-project is highlighted, and it indicates the command this process is
+This log file snippet shows the end of one process (Process ids are in brackets) and  beginning of a second process.  
+![](log.png)  
+The first line referring the second project is highlighted, and it indicates the command this process is
 carrying out.
 
-Every line in the log file starts with the process id and followed by an
-error level string such as Info and a column.
-
-The next string is usually the name of the function (e.g. isRawDevice)
-and its significant parameters.
-
-For full understanding of the printout you should refer to the source
-file.
+Every log file line starts with process id, then error level string such as  <font color=green>`Info`</font> and a colon.  
+The next string is usually the function name (e.g. <font color=blue>`isRawDevice`</font>) and its significant parameters.  
+To fully understand the snippet, refer to the source code.  

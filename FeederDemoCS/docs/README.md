@@ -148,7 +148,7 @@ int nCPov = joystick.GetVJDContPovNumber(id);
 bool X_Exist = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_X);
 bool Y_Exist = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_Y);
 bool Z_Exist = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_Z);
-bool RX_Exist = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_RX); nBtn, nDPov, nCPov);
+bool RX_Exist = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_RX);
 
 prt = String.Format("Device[{0}]: Buttons={1}; DiscPOVs:{2}; ContPOVs:{3}", id, nBtn, nDPov, nCPov);
 Console.WriteLine(prt);
@@ -158,7 +158,7 @@ Console.WriteLine(prt);
 Having inquiried *about* system and vJoy device `status`,  
 now change `status` of a target VJD to *Acquired* it (if it is not already):
 ```
-status = joystick.GetVJDStatus(id);     // Write access to vJoy Device - Basic VjdStat status
+VjdStat status = joystick.GetVJDStatus(id);     // Write access to vJoy Device - Basic VjdStat status
 // Acquire the target
 if ((status == VjdStat.VJD_STAT_OWN)
  || ((status == VjdStat.VJD_STAT_FREE) && (! joystick.AcquireVJD(id))))
